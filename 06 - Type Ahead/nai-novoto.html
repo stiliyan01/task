@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form class="search-form">
+      <input type="text" class="search" placeholder="City or State" />
+      <ul class="suggestions">
+        <li>Filter for a city</li>
+        <li>or a state</li>
+      </ul>
+    </form>
+    <script>
+      const endpoint =
+        "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json";
+
+      let namespace = {
+        cities: [],
+        arr: [],
+        endpoint:
+          "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json",
+
+        html: null,
+        input: document.querySelector(".search"),
+        suggestions: document.querySelector(".suggestions"),
+
+        getData: function () {
+          fetch(this.endpoint)
+            .then((response) => {
+              // console.log(response.json());
+              return response.json();
+            })
+            .then((data) => {
+              this.cities.push(...data);
+            });
+          return this.cities;
+        },
+
+        inputing: function () {
+          this.input.addEventListener("input", () => {
+            this.arr = this.cities
+              .filter(
+                (place) =>
+                  place.city.includes(this.input.value) ||
+                  place.state.includes(this.input.value)
+              )
+              .map((place) => `<li>${place.city}, ${place.state}</li>`);
+            this.showArr();
+          });
+        },
+        showArr: function () {
+          this.html = !this.arr.length ? "" : this.arr.join("");
+          this.suggestions.innerHTML = this.html;
+        },
+
+        start: function () {
+          this.getData(), this.inputing(), this.showArr();
+        },
+      };
+
+      // let cities = [];
+      // let input = document.querySelector(".search");
+      // let arr = [];
+      // fetch(endpoint)
+      //   .then((response) => {
+      //     return response.json();
+      //   })
+      //   .then((data) => {
+      //     cities.push(...data);
+      //   });
+
+      // input.addEventListener("input", () => {
+      //   let arr = cities
+      //     .filter(
+      //       (place) =>
+      //         place.city.includes(input.value) ||
+      //         place.state.includes(input.value)
+      //     )
+      //     .map((place) => `<li>${place.city}, ${place.state}</li>`);
+      //   console.log(arr);
+      //   console.log(arr);
+      //   showArr(arr);
+      // });
+      // function showArr(arr) {
+      //   const html = !arr.length ? "" : arr.join("");
+      //   document.querySelector("ul").innerHTML = html;
+      // }
+    </script>
+  </body>
+</html>

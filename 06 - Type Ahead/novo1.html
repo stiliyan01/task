@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      let namespace = {
+        cities: [],
+        arr: [],
+        endpoint:
+          "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json",
+
+        html: ``,
+        input: document.querySelector(".search"),
+        suggestions: document.querySelector(".suggestions"),
+        mapper: function () {
+          `<li><span>${place.state}, ${place.city}</span><span>${place.population}</span></li>`;
+        },
+        filterForArray: function (place) {
+          //  let input = document.querySelector(".search");
+          place.city.toLowerCase().includes(this.input.value.toLowerCase()) ||
+            place.state.toLowerCase().includes(this.input.value.toLowerCase());
+        },
+        getValue: function () {
+          let input = document.querySelector(".search");
+          console.log(input.value);
+          if (input.value.length > 2) {
+            this.arr = this.cities
+              .filter(this.filterForArray())
+              .map(this.mapper());
+
+            this.showArr();
+          }
+        },
+
+        getData: function () {
+          console.log(1, "predi fetcha");
+          return fetch(this.endpoint);
+        },
+        inputListener: function () {
+          let input = document.querySelector(".search");
+          input.addEventListener("input", this.getValue());
+          if (input.value.length > 1) {
+            this.getValue();
+          }
+        },
+
+        showArr: function () {
+          let html = "";
+          let suggestions = document.querySelector(".suggestions");
+          html = !this.arr.length ? "" : this.arr.join("");
+          suggestions.innerHTML = html;
+        },
+        start: function () {
+          this.getData()
+            .then((response) => {
+              console.log(2, "purviq then vzemane na json");
+
+              return response.json();
+            })
+            .then((data) => {
+              console.log(3, "2 then convert ot json v masiv");
+              this.cities.push(...data);
+              console.log(4, "slojeni sa v masiva");
+              return this.cities;
+              console.log("cities are returned");
+            })
+            .then((response) => {
+              this.inputListener();
+              console.log("input fun on action");
+            })
+            .then((response) => {
+              this.showArr();
+              console.log("showarrfun");
+            });
+        },
+      };
+      // window.addEventListener("load", () => {
+      //   namespace.start();
+      // });
+      window.onload = namespace.start();
+    </script>
+  </head>
+  <body>
+    <form class="search-form">
+      <input type="text" class="search" placeholder="City or State" />
+      <ul class="suggestions">
+        <li>
+          <span class="span" id="left">Filter for a city</span
+          ><span class="span" id="right"></span>
+        </li>
+        <li>or a state</li>
+      </ul>
+    </form>
+  </body>
+</html>
